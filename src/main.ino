@@ -101,6 +101,15 @@ void setupWebServer() {
     server.send(200, "application/json", json);
   });
 
+  server.on("/", HTTP_POST, [](){
+    StaticJsonBuffer<200> newBuffer;
+    JsonObject& newjson = newBuffer.parseObject(server.arg("plain"));
+    Serial.println("Recieved: ");
+    newjson.prettyPrintTo(Serial);
+    Serial.println("");
+    server.send (200, "application/json");
+  });
+
   // Start webserver
   server.begin();
   Serial.println("[Webserver] Done.");
