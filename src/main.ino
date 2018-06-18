@@ -7,6 +7,7 @@
 #include <ESP8266WebServer.h>
 #include <ArduinoOTA.h>
 #include <WiFiManager.h>
+#include <ArduinoJson.h>
 
 const char* ssid = "..........";
 const char* password = "..........";
@@ -14,7 +15,7 @@ const char* password = "..........";
 #define OTA_HOSTNAME                ""       // Leave empty for esp8266-[ChipID]
 #define WIFI_MANAGER_STATION_NAME   ""       // Leave empty for auto generated name ESP + ChipID
 
-void setup_OTA() {
+void setupOTA() {
   // Port defaults to 8266
   // ArduinoOTA.setPort(8266);
 
@@ -64,7 +65,7 @@ void setup_OTA() {
   ArduinoOTA.begin();
 }
 
-void setup_wifi_manager() {
+void setupWifiManager() {
   //WiFiManager
   //Local intialization. Once its business is done, there is no need to keep it around
   WiFiManager wifiManager;
@@ -85,12 +86,16 @@ void setup_wifi_manager() {
   }
 }
 
+void setupWebServer() {
+  
+}
+
 void setup() {
   Serial.begin(115200);
   Serial.println("Booting");
 
-  setup_wifi_manager();
-  setup_OTA();
+  setupWifiManager();
+  setupOTA();
 
   Serial.println("Ready");
   Serial.print("IP address: ");
