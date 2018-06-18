@@ -18,6 +18,7 @@ const char* password = "..........";
 ESP8266WebServer server(80);
 
 void setupOTA() {
+  Serial.println("[OTA] Initializing...");
   // Port defaults to 8266
   // ArduinoOTA.setPort(8266);
 
@@ -65,6 +66,7 @@ void setupOTA() {
     }
   });
   ArduinoOTA.begin();
+  Serial.println("[OTA] Done.");
 }
 
 void setupWifiManager() {
@@ -89,12 +91,36 @@ void setupWifiManager() {
 }
 
 void setupWebServer() {
+  Serial.println("[Webserver] Initializing...");
   server.on("/", HTTP_GET, [](){
     server.send(200, "text/plain", "It works!");
   });
 
+  server.on("/getChipStats", HTTP_GET, [](){
+    String json = getChipStatsJSON();
+    server.send(200, "application/json", json);
+  });
+
   // Start webserver
   server.begin();
+  Serial.println("[Webserver] Done.");
+}
+
+String getChipStatsJSON() {
+  const size_t bufferSize = JSON_OBJECT_SIZE(1) + JSON_OBJECT_SIZE(4);
+  DynamicJsonBuffer jsonBuffer(bufferSize);
+
+  JsonObject& root = jsonBuffer.createObject();
+  JsonObject& chip = root.createNestedObject("chip");
+
+  chip["id"] = String(ESP.getFlashChipId(), HEX);
+  chip["mode"] = String(ESP.getFlashChipMode());
+  chip["size"] = String(String(ESP.getFlashChipRealSize()) + " bytes");
+  chip["speed"] = String(String(ESP.getFlashChipSpeed()) + " Hz");
+
+  String resp;
+  root.prettyPrintTo(resp);
+  return resp;
 }
 
 void setup() {
