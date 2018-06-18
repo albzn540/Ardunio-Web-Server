@@ -15,6 +15,8 @@ const char* password = "..........";
 #define OTA_HOSTNAME                ""       // Leave empty for esp8266-[ChipID]
 #define WIFI_MANAGER_STATION_NAME   ""       // Leave empty for auto generated name ESP + ChipID
 
+ESP8266WebServer server(80);
+
 void setupOTA() {
   // Port defaults to 8266
   // ArduinoOTA.setPort(8266);
@@ -87,7 +89,12 @@ void setupWifiManager() {
 }
 
 void setupWebServer() {
-  
+  server.on("/", HTTP_GET, [](){
+    server.send(200, "text/plain", "It works!");
+  });
+
+  // Start webserver
+  server.begin();
 }
 
 void setup() {
@@ -96,6 +103,7 @@ void setup() {
 
   setupWifiManager();
   setupOTA();
+  setupWebServer();
 
   Serial.println("Ready");
   Serial.print("IP address: ");
@@ -104,4 +112,5 @@ void setup() {
 
 void loop() {
   ArduinoOTA.handle();
+  server.handleClient();
 }
